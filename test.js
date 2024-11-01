@@ -9,7 +9,7 @@ const trackingNumbers = [
 
 async function testTrackingAPI() {
     try {
-        const response = await fetch('http://localhost:3000/tracking', {
+        const response = await fetch('https://scrap-usps-shipping-status-nestjs.onrender.com/tracking', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
