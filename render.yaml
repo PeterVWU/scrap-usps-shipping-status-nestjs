@@ -3,7 +3,7 @@ services:
     name: usps-tracker
     env: node
     region: oregon
-    buildCommand: npm install && npm run build
+    buildCommand: chmod +x build.sh && ./build.sh
     startCommand: npm run start:prod
     envVars:
       - key: NODE_ENV
