@@ -4,7 +4,7 @@ import * as puppeteer from 'puppeteer';
 @Injectable()
 export class TrackingService {
 
-    async getTrackingStatus(trackingNumbers: string[]): Promise<any[]> {
+    async getTrackingStatus(trackingNumbers: string[]): Promise<any> {
         const browser = await puppeteer.launch({
             headless: true,
             args: [
@@ -16,7 +16,7 @@ export class TrackingService {
             ]
         });
         let results = []
-
+        let data = ''
         const trackingString = trackingNumbers.join('%2C');
         try {
             const page = await browser.newPage();
@@ -36,7 +36,10 @@ export class TrackingService {
             const url = `https://tools.usps.com/go/TrackConfirmAction.action?tLabels=${trackingString}`;
             await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
             // Wait for tracking results to load
-            await page.waitForSelector('.track-bar-container', { timeout: 90000 });
+            data = await page.content();
+
+            console.log(data);
+            await page.waitForSelector('.track-bar-container', { timeout: 15000 });
 
             // Extract all tracking statuses
             results = await page.evaluate(() => {
@@ -65,6 +68,6 @@ export class TrackingService {
         }
         console.log(results)
 
-        return results;
+        return [results, data];
     }
 }
