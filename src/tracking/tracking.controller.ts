@@ -10,8 +10,8 @@ export class TrackingController {
         return this.trackingService.getTrackingStatus(body.trackingNumbers);
     }
 
-    // @Get('shipstation')
-    // async getShipStationStatuses(@Query('createDateStart') createDateStart: string) {
-    //     return this.trackingService.getShipmentStatusesFromShipStation(createDateStart);
-    // }
+    @Get('shipstation')
+    async getShipStationStatuses(@Query('createDateStart') createDateStart: string) {
+        return this.trackingService.getShipmentStatusesFromShipStation(createDateStart);
+    }
 }

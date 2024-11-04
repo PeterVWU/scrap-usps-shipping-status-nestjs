@@ -15,19 +15,19 @@ interface ShipStationResponse {
 export class TrackingService {
     constructor(private readonly httpService: HttpService) { }
 
-    // async getShipStationShipments(createDateStart: string) {
-    //     try {
-    //         const { data } = await firstValueFrom(
-    //             this.httpService.get<ShipStationResponse>(
-    //                 `https://shipstation-proxy.info-ba2.workers.dev/shipments?createDateStart=${createDateStart}&pageSize=30`
-    //             )
-    //         );
-    //         return data.shipments;
-    //     } catch (error) {
-    //         console.error('Error fetching shipments:', error);
-    //         throw error;
-    //     }
-    // }
+    async getShipStationShipments(createDateStart: string) {
+        try {
+            const { data } = await firstValueFrom(
+                this.httpService.get<ShipStationResponse>(
+                    `https://shipstation-proxy.info-ba2.workers.dev/shipments?createDateStart=${createDateStart}&pageSize=30`
+                )
+            );
+            return data.shipments;
+        } catch (error) {
+            console.error('Error fetching shipments:', error);
+            throw error;
+        }
+    }
 
     async getTrackingStatus(trackingNumbers: string[]): Promise<any> {
         const browser = await puppeteer.launch({
@@ -117,31 +117,31 @@ export class TrackingService {
         return results;
     }
 
-    // async getShipmentStatusesFromShipStation(createDateStart: string) {
-    //     // Get shipments from ShipStation
-    //     const shipments = await this.getShipStationShipments(createDateStart);
+    async getShipmentStatusesFromShipStation(createDateStart: string) {
+        // Get shipments from ShipStation
+        const shipments = await this.getShipStationShipments(createDateStart);
 
-    //     // Extract tracking numbers and order numbers
-    //     const trackingInfo = shipments.map(shipment => ({
-    //         orderNumber: shipment.orderNumber,
-    //         trackingNumber: shipment.trackingNumber
-    //     }));
+        // Extract tracking numbers and order numbers
+        const trackingInfo = shipments.map(shipment => ({
+            orderNumber: shipment.orderNumber,
+            trackingNumber: shipment.trackingNumber
+        }));
 
-    //     // Get tracking status for all tracking numbers
-    //     const trackingNumbers = trackingInfo.map(info => info.trackingNumber);
-    //     const trackingStatuses = await this.getTrackingStatus(trackingNumbers);
+        // Get tracking status for all tracking numbers
+        const trackingNumbers = trackingInfo.map(info => info.trackingNumber);
+        const trackingStatuses = await this.getTrackingStatus(trackingNumbers);
 
-    //     // Combine the results
-    //     return trackingInfo.map(info => {
-    //         const status = trackingStatuses.find(s => s.trackingNumber === info.trackingNumber);
-    //         return {
-    //             orderNumber: info.orderNumber,
-    //             trackingNumber: info.trackingNumber,
-    //             status: status?.status || 'Status not found',
-    //             date: status?.date || 'Date not found'
-    //         };
-    //     });
-    // }
+        // Combine the results
+        return trackingInfo.map(info => {
+            const status = trackingStatuses.find(s => s.trackingNumber === info.trackingNumber);
+            return {
+                orderNumber: info.orderNumber,
+                trackingNumber: info.trackingNumber,
+                status: status?.status || 'Status not found',
+                date: status?.date || 'Date not found'
+            };
+        });
+    }
 
     private async randomDelay(min: number, max: number) {
         const delay = Math.floor(Math.random() * (max - min + 1) + min);
