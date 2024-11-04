@@ -35,10 +35,14 @@ export class TrackingService {
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--disable-gpu',
-            ]
+                '--disable-web-security',
+                '--disable-features=IsolateOrigins,site-per-process',
+                '--window-size=1920,1080'
+            ],
+            defaultViewport: {
+                width: 1920,
+                height: 1080
+            }
         });
 
         // Add random delay before navigation
@@ -64,7 +68,6 @@ export class TrackingService {
                 headers['Accept-Language'] = 'en-US,en;q=0.9';
                 request.continue({ headers });
             });
-            await page.setViewport({ width: 1280, height: 800 });
 
             // Enable request interception to optimize loading
             // await page.setRequestInterception(true);
@@ -78,7 +81,7 @@ export class TrackingService {
 
             console.log('trackingString', trackingString)
             const url = `https://tools.usps.com/go/TrackConfirmAction.action?tLabels=${trackingString}`;
-            await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
+            await page.goto(url, { waitUntil: 'networkidle0', timeout: 600000 });
 
 
             // Simulate human-like behavior
