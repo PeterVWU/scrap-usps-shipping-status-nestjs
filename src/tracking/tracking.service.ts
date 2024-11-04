@@ -31,7 +31,6 @@ export class TrackingService {
 
     async getTrackingStatus(trackingNumbers: string[]): Promise<any> {
         const browser = await puppeteer.launch({
-            headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
