@@ -37,7 +37,8 @@ export class TrackingService {
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
                 '--disable-accelerated-2d-canvas',
-                '--disable-gpu'
+                '--disable-gpu',
+                '--enable-features=ExperimentalJavaScript'
             ]
         });
         let results = []
