@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { TrackingService } from './tracking.service';
+import { HttpModule } from '@nestjs/axios';
 import { TrackingController } from './tracking.controller';
+import { TrackingService } from './tracking.service';
 
 @Module({
-    providers: [TrackingService],
+    imports: [HttpModule],
     controllers: [TrackingController],
+    providers: [TrackingService]
 })
 export class TrackingModule { }

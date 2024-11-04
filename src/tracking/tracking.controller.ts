@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { TrackingService } from './tracking.service';
 
 @Controller('tracking')
@@ -9,4 +9,9 @@ export class TrackingController {
     async getTrackingStatus(@Body() body: { trackingNumbers: string[] }) {
         return this.trackingService.getTrackingStatus(body.trackingNumbers);
     }
+
+    // @Get('shipstation')
+    // async getShipStationStatuses(@Query('createDateStart') createDateStart: string) {
+    //     return this.trackingService.getShipmentStatusesFromShipStation(createDateStart);
+    // }
 }

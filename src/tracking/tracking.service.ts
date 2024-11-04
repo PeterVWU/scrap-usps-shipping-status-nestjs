@@ -1,8 +1,33 @@
 import { Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 import * as puppeteer from 'puppeteer';
+
+interface ShipStationResponse {
+    shipments: Array<{
+        orderNumber: string;
+        trackingNumber: string;
+        createDate: string;
+    }>;
+}
 
 @Injectable()
 export class TrackingService {
+    constructor(private readonly httpService: HttpService) { }
+
+    // async getShipStationShipments(createDateStart: string) {
+    //     try {
+    //         const { data } = await firstValueFrom(
+    //             this.httpService.get<ShipStationResponse>(
+    //                 `https://shipstation-proxy.info-ba2.workers.dev/shipments?createDateStart=${createDateStart}&pageSize=30`
+    //             )
+    //         );
+    //         return data.shipments;
+    //     } catch (error) {
+    //         console.error('Error fetching shipments:', error);
+    //         throw error;
+    //     }
+    // }
 
     async getTrackingStatus(trackingNumbers: string[]): Promise<any> {
         const browser = await puppeteer.launch({
@@ -16,7 +41,6 @@ export class TrackingService {
             ]
         });
         let results = []
-        let data = ''
         const trackingString = trackingNumbers.join('%2C');
         try {
             const page = await browser.newPage();
@@ -34,12 +58,10 @@ export class TrackingService {
 
             console.log('trackingString', trackingString)
             const url = `https://tools.usps.com/go/TrackConfirmAction.action?tLabels=${trackingString}`;
-            await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+            await page.goto(url, { waitUntil: 'networkidle0', timeout: 50000 });
             // Wait for tracking results to load
-            data = await page.content();
 
-            console.log(data);
-            await page.waitForSelector('.track-bar-container', { timeout: 15000 });
+            await page.waitForSelector('.track-bar-container', { timeout: 50000 });
 
             // Extract all tracking statuses
             results = await page.evaluate(() => {
@@ -56,9 +78,7 @@ export class TrackingService {
                     };
                 });
             });
-            console.log('before close')
             await page.close();
-
         }
         catch (error) {
             console.log('error', error)
@@ -66,8 +86,32 @@ export class TrackingService {
         finally {
             await browser.close();
         }
-        console.log(results)
-
-        return [results, data];
+        return results;
     }
+
+    // async getShipmentStatusesFromShipStation(createDateStart: string) {
+    //     // Get shipments from ShipStation
+    //     const shipments = await this.getShipStationShipments(createDateStart);
+
+    //     // Extract tracking numbers and order numbers
+    //     const trackingInfo = shipments.map(shipment => ({
+    //         orderNumber: shipment.orderNumber,
+    //         trackingNumber: shipment.trackingNumber
+    //     }));
+
+    //     // Get tracking status for all tracking numbers
+    //     const trackingNumbers = trackingInfo.map(info => info.trackingNumber);
+    //     const trackingStatuses = await this.getTrackingStatus(trackingNumbers);
+
+    //     // Combine the results
+    //     return trackingInfo.map(info => {
+    //         const status = trackingStatuses.find(s => s.trackingNumber === info.trackingNumber);
+    //         return {
+    //             orderNumber: info.orderNumber,
+    //             trackingNumber: info.trackingNumber,
+    //             status: status?.status || 'Status not found',
+    //             date: status?.date || 'Date not found'
+    //         };
+    //     });
+    // }
 }
