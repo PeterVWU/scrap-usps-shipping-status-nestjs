@@ -58,10 +58,10 @@ export class TrackingService {
 
             console.log('trackingString', trackingString)
             const url = `https://tools.usps.com/go/TrackConfirmAction.action?tLabels=${trackingString}`;
-            await page.goto(url, { waitUntil: 'networkidle0', timeout: 50000 });
+            await page.goto(url, { waitUntil: 'networkidle0', timeout: 300000 });
             // Wait for tracking results to load
 
-            await page.waitForSelector('.track-bar-container', { timeout: 50000 });
+            await page.waitForSelector('.track-bar-container', { timeout: 60000 });
 
             // Extract all tracking statuses
             results = await page.evaluate(() => {
